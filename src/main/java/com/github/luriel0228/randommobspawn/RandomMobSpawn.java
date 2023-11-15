@@ -15,7 +15,7 @@ public final class RandomMobSpawn extends JavaPlugin {
     }
 
     private void setExecutor() {
-        PluginCommand RandomMobSpawnCommand = getCommand("랜덤몹스폰");
-        Objects.requireNonNull(RandomMobSpawnCommand).setExecutor(new RandomMobSpawnCommand(this));
+        PluginCommand randomMobSpawnCmd = getCommand("랜덤몹생성");
+        Objects.requireNonNull(randomMobSpawnCmd).setExecutor(new RandomMobSpawnCommand(this));
     }
 }

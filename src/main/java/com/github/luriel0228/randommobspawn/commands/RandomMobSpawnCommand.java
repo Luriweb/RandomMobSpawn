@@ -9,7 +9,9 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class RandomMobSpawnCommand implements CommandExecutor {
 
@@ -19,33 +21,37 @@ public class RandomMobSpawnCommand implements CommandExecutor {
         this.plugin = plugin;
     }
 
-    private final Map<EntityType, Integer> spawnCounts = new HashMap<>();
+    private final List<MobSpawnData> mobSpawnDataList = createSpawnList();
 
-    {
-        spawnCounts.put(EntityType.ZOMBIE, 3);
-        spawnCounts.put(EntityType.SKELETON, 3);
-        spawnCounts.put(EntityType.PIGLIN, 3);
-        spawnCounts.put(EntityType.PILLAGER, 3);
-        spawnCounts.put(EntityType.DROWNED, 3);
-        spawnCounts.put(EntityType.SILVERFISH, 3);
-        spawnCounts.put(EntityType.ENDERMITE, 3);
-        spawnCounts.put(EntityType.STRAY, 3);
-        spawnCounts.put(EntityType.HUSK, 3);
-        spawnCounts.put(EntityType.SPIDER, 1);
-        spawnCounts.put(EntityType.CAVE_SPIDER, 1);
-        spawnCounts.put(EntityType.ENDERMAN, 1);
-        spawnCounts.put(EntityType.CREEPER, 1);
-        spawnCounts.put(EntityType.SLIME, 1);
-        spawnCounts.put(EntityType.BLAZE, 1);
-        spawnCounts.put(EntityType.MAGMA_CUBE, 1);
-        spawnCounts.put(EntityType.WITCH, 1);
-        spawnCounts.put(EntityType.WITHER_SKELETON, 1);
-        spawnCounts.put(EntityType.EVOKER, 1);
-        spawnCounts.put(EntityType.VEX, 1);
-        spawnCounts.put(EntityType.VINDICATOR, 1);
-        spawnCounts.put(EntityType.ZOMBIFIED_PIGLIN, 1);
-        spawnCounts.put(EntityType.RAVAGER, 1);
-        spawnCounts.put(EntityType.ENDER_DRAGON, 1);
+    private List<MobSpawnData> createSpawnList() {
+        List<MobSpawnData> spawnList = new ArrayList<>();
+
+        spawnList.add(new MobSpawnData(EntityType.ZOMBIE, 3));
+        spawnList.add(new MobSpawnData(EntityType.SKELETON, 3));
+        spawnList.add(new MobSpawnData(EntityType.PIGLIN, 3));
+        spawnList.add(new MobSpawnData(EntityType.PILLAGER, 3));
+        spawnList.add(new MobSpawnData(EntityType.DROWNED, 3));
+        spawnList.add(new MobSpawnData(EntityType.SILVERFISH, 3));
+        spawnList.add(new MobSpawnData(EntityType.ENDERMITE, 3));
+        spawnList.add(new MobSpawnData(EntityType.STRAY, 3));
+        spawnList.add(new MobSpawnData(EntityType.HUSK, 3));
+
+        spawnList.add(new MobSpawnData(EntityType.SPIDER, 1));
+        spawnList.add(new MobSpawnData(EntityType.CAVE_SPIDER, 1));
+        spawnList.add(new MobSpawnData(EntityType.ENDERMAN, 1));
+        spawnList.add(new MobSpawnData(EntityType.ZOMBIFIED_PIGLIN, 1));
+        spawnList.add(new MobSpawnData(EntityType.CREEPER, 1));
+        spawnList.add(new MobSpawnData(EntityType.SLIME, 1));
+        spawnList.add(new MobSpawnData(EntityType.BLAZE, 1));
+        spawnList.add(new MobSpawnData(EntityType.MAGMA_CUBE, 1));
+        spawnList.add(new MobSpawnData(EntityType.WITCH, 1));
+        spawnList.add(new MobSpawnData(EntityType.WITHER_SKELETON, 1));
+        spawnList.add(new MobSpawnData(EntityType.EVOKER, 1));
+        spawnList.add(new MobSpawnData(EntityType.VEX, 1));
+        spawnList.add(new MobSpawnData(EntityType.VINDICATOR, 1));
+        spawnList.add(new MobSpawnData(EntityType.RAVAGER, 1));
+
+        return spawnList;
     }
 
     @Override
@@ -62,19 +68,35 @@ public class RandomMobSpawnCommand implements CommandExecutor {
 
     private void spawnRandomMob(Player player) {
         Random random = new Random();
+        MobSpawnData data = getRandomMobData(random);
 
-        List<EntityType> spawnList = new ArrayList<>();
+        EntityType entityType = data.getEntityType();
+        int count = data.getCount();
 
-        for (Map.Entry<EntityType, Integer> entry : spawnCounts.entrySet()) {
-            EntityType entityType = entry.getKey();
-            int count = entry.getValue();
+        for (int i = 0; i < count; i++) {
+            player.getWorld().spawnEntity(player.getLocation(), entityType);
+        }
+    }
 
-            for (int i = 0; i < count; i++) {
-                spawnList.add(entityType);
-            }
+    private MobSpawnData getRandomMobData(Random random) {
+        return mobSpawnDataList.get(random.nextInt(mobSpawnDataList.size()));
+    }
+
+    private static class MobSpawnData {
+        private final EntityType entityType;
+        private final int count;
+
+        public MobSpawnData(EntityType entityType, int count) {
+            this.entityType = entityType;
+            this.count = count;
         }
 
-        EntityType randomEntityType = spawnList.get(random.nextInt(spawnList.size()));
-        player.getWorld().spawnEntity(player.getLocation(), randomEntityType);
+        public EntityType getEntityType() {
+            return entityType;
+        }
+
+        public int getCount() {
+            return count;
+        }
     }
 }
